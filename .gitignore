@@ -32,9 +32,6 @@ coverage/
 # TypeScript cache and build artifacts
 .tsbuildinfo
 
-# Vitest cache
-.vitest/
-
 # Husky hooks
 .husky/_/
 
