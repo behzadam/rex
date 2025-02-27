@@ -1,0 +1,45 @@
+# Dependency directories
+node_modules/
+
+# Build output
+dist/
+coverage/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ESLint cache
+.eslintcache
+
+# TypeScript cache and build artifacts
+.tsbuildinfo
+
+# Vitest cache
+.vitest/
+
+# Husky hooks
+.husky/_/
+
+# macOS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
