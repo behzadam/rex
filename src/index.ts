@@ -1,3 +1,4 @@
-export const greet = (name: string): string => {
-  return `Hello, ${name}!`
-}
+import * as rex from './external'
+export * from './external'
+export { rex }
+export default rex
