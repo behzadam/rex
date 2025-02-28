@@ -1,7 +1,7 @@
-export abstract class RexType<Type = any, RexValidation = any> {
-  protected _validations: RexValidation[] = []
-  protected _addValidate(check: RexValidation) {
-    this._validations.push(check)
+export abstract class RexType<Type = any, RexCheck = any> {
+  protected _checks: RexCheck[] = []
+  protected _check(check: RexCheck) {
+    this._checks.push(check)
     return this
   }
 

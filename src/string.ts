@@ -1,17 +1,17 @@
 import { RexType } from './rex-type'
 import { errorUtil } from './utils'
 
-export type StringValidation =
+export type StringCheck =
   | { kind: 'min'; value: number; message?: string }
   | { kind: 'max'; value: number; message?: string }
 
-class RexString extends RexType<string, StringValidation> {
+class RexString extends RexType<string, StringCheck> {
   parse(input: unknown): string {
     if (typeof input !== 'string') {
       throw new Error(`Expected string, got ${typeof input}`)
     }
 
-    for (const validate of this._validations) {
+    for (const validate of this._checks) {
       if (validate.kind === 'min' && input.length < validate.value) {
         throw new Error(
           validate.message ??
@@ -31,7 +31,7 @@ class RexString extends RexType<string, StringValidation> {
   }
 
   min(minLength: number, message?: errorUtil.ErrMessage) {
-    return this._addValidate({
+    return this._check({
       kind: 'min',
       value: minLength,
       ...errorUtil.errToObj(message),
@@ -39,7 +39,7 @@ class RexString extends RexType<string, StringValidation> {
   }
 
   max(maxLength: number, message?: errorUtil.ErrMessage) {
-    return this._addValidate({
+    return this._check({
       kind: 'max',
       value: maxLength,
       ...errorUtil.errToObj(message),
