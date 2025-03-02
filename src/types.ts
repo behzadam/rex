@@ -1,3 +1,15 @@
+export type Primitive =
+  | string
+  | number
+  | symbol
+  | bigint
+  | boolean
+  | null
+  | undefined
+
+export type Scalars = Primitive | Primitive[]
+
+export type AnyObject = Record<string, any>
 export interface ParseResult {
   status: 'aborted' | 'dirty' | 'valid'
   data: any
@@ -19,16 +31,3 @@ export type AsyncParseReturnType<T> = Promise<SyncParseReturnType<T>>
 export type ParseReturnType<T> =
   | SyncParseReturnType<T>
   | AsyncParseReturnType<T>
-
-export type Primitive =
-  | string
-  | number
-  | symbol
-  | bigint
-  | boolean
-  | null
-  | undefined
-
-export type Scalars = Primitive | Primitive[]
-
-export type AnyObject = Record<string, any>
