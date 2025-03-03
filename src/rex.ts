@@ -2,7 +2,7 @@ import { ParseReturnType } from './types'
 
 export abstract class RexType<
   Output = any,
-  Def extends RexTypeDef = RexTypeDef,
+  Meta extends RexTypeMeta = RexTypeMeta,
   Input = Output,
 > {
   //#region Properties
@@ -10,28 +10,28 @@ export abstract class RexType<
   readonly _type!: Output
   readonly _output!: Output
   readonly _input!: Input
-  readonly _def!: Def
+  readonly _meta!: Meta
   //#endregion
 
-  constructor(def: Def) {
-    this._def = def
-  }
-
-  protected _checks: Output[] = []
-  protected _check(check: Output) {
-    this._checks.push(check)
-    return this
+  constructor(meta: Meta) {
+    this._meta = meta
+    this.parse = this.parse.bind(this)
   }
 
   abstract _parse(input: unknown): ParseReturnType<Output>
+  parse(input: Input): ParseReturnType<Output> {
+    return this._parse(input)
+  }
 
   get description() {
-    return this._def.description
+    return this._meta.description
   }
 }
-export interface RexTypeDef {
+
+export interface RexTypeMeta {
   description?: string
 }
+
 export type RexRecord = { [k: string]: RexTypeAny }
 export type RexTypeAny = RexType<any, any, any>
 export type TypeOf<T extends RexType<any, any, any>> = T['_output']
