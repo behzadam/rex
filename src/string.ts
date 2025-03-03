@@ -1,46 +1,68 @@
-import { RexType, RexTypeDef } from './rex'
+import { RexType, RexTypeMeta } from './rex'
 import { OK } from './types'
 
-export type StringCheck =
+export type StringValidation =
   | { kind: 'min'; value: number; message?: string }
   | { kind: 'max'; value: number; message?: string }
 
-class RexString extends RexType<string, RexTypeDef, string> {
-  constructor() {
-    super({
-      description: 'string',
-    })
-  }
+export interface StringMeta extends RexTypeMeta {
+  validations: StringValidation[]
+}
 
+class RexString extends RexType<string, StringMeta, string> {
   _parse(input: unknown) {
     if (typeof input !== 'string') {
       throw new Error(`Expected string, got ${typeof input}`)
     }
 
+    for (const validation of this._meta.validations) {
+      if (validation.kind === 'min') {
+        min(input, validation)
+      }
+      if (validation.kind === 'max') {
+        max(input, validation)
+      }
+    }
+
     return OK(input)
   }
-  // check(check: StringCheck) {
-  //   switch (check.kind) {
-  //     case 'min':
-  //       if (this._output.length < check.value) {
-  //         throw new Error(
-  //           check.message || `Expected at least ${check.value} characters`,
-  //         )
-  //       }
-  //       break
-  //     case 'max':
-  //       if (this._output.length > check.value) {
-  //         throw new Error(
-  //           check.message || `Expected at most ${check.value} characters`,
-  //         )
-  //       }
-  //       break
-  //   }
-  //   return this
-  // }
 
-  static create(): RexString {
-    return new RexString()
+  _addValidation(validation: StringValidation) {
+    this._meta.validations.push(validation)
+    return this
+  }
+
+  min(value: number, message?: string) {
+    return this._addValidation({ kind: 'min', value, message })
+  }
+
+  max(value: number, message?: string) {
+    return this._addValidation({ kind: 'max', value, message })
+  }
+
+  static create = (): RexString => {
+    return new RexString({
+      description: 'A string',
+      validations: [],
+    })
+  }
+}
+
+const min = (input: string, validation: StringValidation) => {
+  if (input.length < validation.value) {
+    throw new Error(
+      validation.message ||
+        `Expected string to be at least ${validation.value} characters long`,
+    )
+  }
+}
+
+const max = (input: string, validation: StringValidation) => {
+  if (input.length > validation.value) {
+    throw new Error(
+      validation.message ||
+        `Expected string to be at most ${validation.value} characters long`,
+    )
   }
 }
 
