@@ -13,4 +13,6 @@ test('passing validations', () => {
 test('failing validations', () => {
   expect(() => minFive.parse('1234')).toThrow()
   expect(() => maxFive.parse('123456')).toThrow()
+  expect(() => minFive.parse('1234')).toThrow('min5')
+  expect(() => maxFive.parse('123456')).toThrow('max5')
 })
