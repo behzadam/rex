@@ -1,4 +1,4 @@
-import { ParseReturnType } from './types'
+import { Result } from './types'
 
 export abstract class RexType<
   Output = any,
@@ -16,11 +16,47 @@ export abstract class RexType<
   constructor(meta: Meta) {
     this._meta = meta
     this.parse = this.parse.bind(this)
+    this.safeParse = this.safeParse.bind(this)
+    this.parseAsync = this.parseAsync.bind(this)
+    this.safeParseAsync = this.safeParseAsync.bind(this)
   }
 
   abstract _parse(input: unknown): ParseReturnType<Output>
-  parse(input: Input): ParseReturnType<Output> {
-    return this._parse(input)
+
+  parse(input: Input): Output {
+    const result = this.safeParse(input) as SyncParseReturnType<Output>
+    if (result.status === 'valid') {
+      return result.value
+    }
+    throw new Error(result.message)
+  }
+
+  safeParse(input: Input): ParseReturnType<Output> {
+    try {
+      return this._parse(input)
+    } catch (error) {
+      return Result.invalid(
+        error instanceof Error ? error.message : 'Invalid input',
+      )
+    }
+  }
+
+  async safeParseAsync(input: Input): Promise<ParseReturnType<Output>> {
+    try {
+      return await Promise.resolve(this._parse(input))
+    } catch (error) {
+      return Result.invalid(
+        error instanceof Error ? error.message : 'Invalid input',
+      )
+    }
+  }
+
+  async parseAsync(input: Input): Promise<Output> {
+    const result = await Promise.resolve(this.safeParse(input))
+    if (result.status === 'valid') {
+      return result.value
+    }
+    throw new Error(result.message)
   }
 
   get description() {
@@ -38,3 +74,9 @@ export type TypeOf<T extends RexType<any, any, any>> = T['_output']
 export type input<T extends RexType<any, any, any>> = T['_input']
 export type output<T extends RexType<any, any, any>> = T['_output']
 export type { TypeOf as infer }
+
+export type SyncParseReturnType<T = any> = Result<T>
+export type AsyncParseReturnType<T> = Promise<Result<T>>
+export type ParseReturnType<T> =
+  | SyncParseReturnType<T>
+  | AsyncParseReturnType<T>
