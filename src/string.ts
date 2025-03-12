@@ -16,22 +16,26 @@ class RexString extends RexType<string, StringMeta, string> {
     }
 
     for (const validation of this._meta.validations) {
-      if (validation.kind === 'min') {
-        if (input.length < validation.value) {
-          const message =
-            validation.message ||
-            `Expected string to be at least ${validation.value} characters long`
-          return Result.invalid(message)
-        }
-      }
-      if (validation.kind === 'max') {
-        if (input.length > validation.value) {
-          const message =
-            validation.message ||
-            `Expected string to be at most ${validation.value} characters long`
-          return Result.invalid(message)
-        }
-      }
+      const result = this._check(input, validation)
+      if (!result.success) return result
+    }
+
+    return Result.valid(input)
+  }
+
+  private _check(input: string, validation: StringValidation): Result<string> {
+    const { kind, value, message } = validation
+
+    if (kind === 'min' && input.length < value) {
+      return Result.invalid(
+        message || `Expected string to be at least ${value} characters long`,
+      )
+    }
+
+    if (kind === 'max' && input.length > value) {
+      return Result.invalid(
+        message || `Expected string to be at most ${value} characters long`,
+      )
     }
 
     return Result.valid(input)
