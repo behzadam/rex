@@ -17,12 +17,20 @@ class RexString extends RexType<string, StringMeta, string> {
 
     for (const validation of this._meta.validations) {
       if (validation.kind === 'min') {
-        const minResult = min(input, validation)
-        if (minResult.status === 'invalid') return minResult
+        if (input.length < validation.value) {
+          const message =
+            validation.message ||
+            `Expected string to be at least ${validation.value} characters long`
+          return Result.invalid(message)
+        }
       }
       if (validation.kind === 'max') {
-        const maxResult = max(input, validation)
-        if (maxResult.status === 'invalid') return maxResult
+        if (input.length > validation.value) {
+          const message =
+            validation.message ||
+            `Expected string to be at most ${validation.value} characters long`
+          return Result.invalid(message)
+        }
       }
     }
 
@@ -48,26 +56,6 @@ class RexString extends RexType<string, StringMeta, string> {
       validations: [],
     })
   }
-}
-
-const min = (input: string, validation: StringValidation): Result<string> => {
-  if (input.length < validation.value) {
-    const message =
-      validation.message ||
-      `Expected string to be at least ${validation.value} characters long`
-    return Result.invalid(message)
-  }
-  return Result.valid(input)
-}
-
-const max = (input: string, validation: StringValidation): Result<string> => {
-  if (input.length > validation.value) {
-    const message =
-      validation.message ||
-      `Expected string to be at most ${validation.value} characters long`
-    return Result.invalid(message)
-  }
-  return Result.valid(input)
 }
 
 export const string = RexString.create

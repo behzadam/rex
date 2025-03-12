@@ -23,11 +23,12 @@ test('string async parse', async () => {
   const badData = 12
 
   const goodResult = await stringSchema.safeParseAsync(goodData)
-  expect(goodResult.status).toBe('valid')
-  if (goodResult.status === 'valid') expect(goodResult.value).toEqual(goodData)
+  expect(goodResult.success).toBe(true)
+  if (goodResult.success) expect(goodResult.value).toEqual(goodData)
 
   const badResult = await stringSchema.safeParseAsync(badData)
-  expect(badResult.status).toBe('invalid')
-  // if (badResult.status === 'invalid')
-  //   expect(badResult.message).toBeInstanceOf('Expected string, got number')
+  expect(badResult.success).toBe(false)
+  if (!badResult.success) {
+    expect(badResult.error).toBe('Expected string, got number')
+  }
 })
