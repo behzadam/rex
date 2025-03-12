@@ -25,10 +25,10 @@ export abstract class RexType<
 
   parse(input: unknown): Output {
     const result = this.safeParse(input) as SyncParseReturnType<Output>
-    if (result.status === 'valid') {
+    if (result.success === true) {
       return result.value
     }
-    throw new Error(result.message)
+    throw new Error(result.error)
   }
 
   safeParse(input: unknown): ParseReturnType<Output> {
@@ -53,10 +53,10 @@ export abstract class RexType<
 
   async parseAsync(input: unknown): Promise<Output> {
     const result = await Promise.resolve(this.safeParse(input))
-    if (result.status === 'valid') {
+    if (result.success) {
       return result.value
     }
-    throw new Error(result.message)
+    throw new Error(result.error)
   }
 
   get description() {
