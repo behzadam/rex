@@ -26,3 +26,19 @@ test('failing validations', () => {
   expect(() => negative.parse(0)).toThrow()
   expect(() => negative.parse(1)).toThrow()
 })
+
+/// number
+const numberSchema = rex.number()
+test('number async parse', async () => {
+  const goodData = 1234.2353
+  const badData = '1234'
+
+  const goodResult = await numberSchema.safeParseAsync(goodData)
+  expect(goodResult.success).toBe(true)
+  if (goodResult.success) expect(goodResult.value).toEqual(goodData)
+
+  const badResult = await numberSchema.safeParseAsync(badData)
+  expect(badResult.success).toBe(false)
+  if (!badResult.success)
+    expect(badResult.error).toBe('Expected number, got string')
+})
